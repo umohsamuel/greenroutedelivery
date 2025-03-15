@@ -1,7 +1,19 @@
+import Nav from "@/app/components/nav";
+import Hero from "@/app/components/hero";
+import Features from "@/app/components/features";
+import Steps from "@/app/components/steps";
+import Join from "@/app/components/join";
+import Footer from "@/app/components/footer";
+
 export default function Home() {
   return (
-    <div className="flex h-screen items-center justify-center bg-red-500 text-2xl font-bold text-yellow-500">
-      hello bastard richard
-    </div>
+    <main className={`flex flex-col items-center w-full`}>
+      <Nav />
+      <Hero />
+      <Features />
+      <Steps />
+      <Join />
+      <Footer />
+    </main>
   );
 }
