@@ -7,6 +7,12 @@
 @theme {
   --font-apercu: "Apercu", "sans-serif";
   --color-primary: #003f38;
+  --color-lp-secondary: #cdc700;
+  --color-lp-secondaryTwo: #65b40e;
+  --color-lp-primary: #003f38;
+  --color-lp-disabled: #68706f;
+  --color-lp-light-text: #6b6b6b;
+  --color-lp-light-border: #dadada;
 }
 
 :root {
@@ -215,6 +221,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
