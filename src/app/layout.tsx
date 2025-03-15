@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Apercu } from "../../public/fonts";
+import { Providers } from "@/providers";
 
 export const metadata: Metadata = {
   title: "Green Route Delivery",
@@ -15,7 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${Apercu.variable} font-apercu bg-white antialiased`}>
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

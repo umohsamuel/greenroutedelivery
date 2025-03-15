@@ -3,6 +3,11 @@ import localFont from "next/font/local";
 export const Apercu = localFont({
   src: [
     {
+      path: "./Apercu-Font-Family/Apercu Light.otf",
+      weight: "300",
+      style: "normal",
+    },
+    {
       path: "./Apercu-Font-Family/Apercu Regular.otf",
       weight: "400",
       style: "normal",

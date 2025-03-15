@@ -218,4 +218,7 @@
   body {
     @apply bg-background text-foreground;
   }
+  .textGradient {
+    @apply bg-gradient-to-r from-white to-[#CDC700] bg-clip-text text-base font-bold text-transparent;
+  }
 }
