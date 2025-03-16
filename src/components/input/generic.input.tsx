@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Select,
   SelectContent,
@@ -9,6 +11,9 @@ import { FieldPath, FieldValues, UseFormReturn } from "react-hook-form";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { FormControl, FormField, FormItem } from "@/components/ui/form";
+import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface GenericInputType<T extends FieldValues> {
   label: string;
@@ -24,23 +29,27 @@ interface GenericInputType<T extends FieldValues> {
 interface FormInputItemProps<T extends FieldValues> {
   input: GenericInputType<T>;
   form: UseFormReturn<T>;
+  className?: string;
 }
 
 export function FormInputItem<T extends FieldValues>({
   input,
   form,
+  className,
 }: FormInputItemProps<T>) {
   const hasError = !!form.formState.errors[input.name as keyof T]?.message;
   const errorMessage = form.formState.errors[input.name as keyof T]?.message as
     | string
     | undefined;
 
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
     <FormField
       control={form.control}
       name={input.name}
       render={({ field }) => (
-        <FormItem>
+        <FormItem className={cn("", className)}>
           <FormControl>
             <div className="flex flex-col gap-[6px]">
               <label htmlFor={input.name} className="text-base font-light">
@@ -69,6 +78,31 @@ export function FormInputItem<T extends FieldValues>({
                     ))}
                   </SelectContent>
                 </Select>
+              ) : input.type === "password" ? (
+                <div className="relative">
+                  <Input
+                    placeholder={input.placeholder}
+                    className="h-[56px] pr-14"
+                    type={showPassword ? "text" : "password"}
+                    {...field}
+                  />
+
+                  {showPassword ? (
+                    <EyeOff
+                      size={24}
+                      color="#00000099"
+                      className="absolute top-1/2 right-6 -translate-y-1/2 cursor-pointer"
+                      onClick={() => setShowPassword(false)}
+                    />
+                  ) : (
+                    <Eye
+                      size={24}
+                      color="#00000099"
+                      className="absolute top-1/2 right-6 -translate-y-1/2 cursor-pointer"
+                      onClick={() => setShowPassword(true)}
+                    />
+                  )}
+                </div>
               ) : (
                 <Input
                   placeholder={input.placeholder}

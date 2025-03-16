@@ -228,4 +228,7 @@
   .textGradient {
     @apply bg-gradient-to-r from-white to-[#CDC700] bg-clip-text text-base font-bold text-transparent;
   }
+  .secondaryGradient {
+    @apply bg-gradient-to-r from-[#003F38] to-[#65B40E] bg-clip-text text-base font-bold text-transparent;
+  }
 }
