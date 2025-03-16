@@ -188,8 +188,8 @@ export function DataTable<TData extends Shipment, TValue>({
   }
 
   return (
-    <div className="flex flex-col gap-6 rounded-[8px] border border-solid border-[#EEEEEE] p-6">
-      <div className="flex items-center justify-between">
+    <div className="flex flex-col gap-6 rounded-[8px] border border-solid border-[#EEEEEE] p-3 lg:p-6">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between lg:gap-0">
         <h3 className="text-lg font-bold text-[#101828]">
           All shipments <span className="font-medium text-[#65B40E]">(23)</span>
         </h3>

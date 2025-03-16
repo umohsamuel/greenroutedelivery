@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -6,98 +8,98 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Check } from "lucide-react";
+import { useShipmentStore } from "@/providers/zustand";
+import { Stepper } from "@/components/stepper";
+import { shippingFormSteps, steps } from "@/lib/shipping";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 export default function NewShipment() {
+  const currentStep = useShipmentStore((state) => state.currentFormStep);
+  const setCurrentStep = useShipmentStore((state) => state.setCurrentFormStep);
+
+  function handleFinalSubmit() {
+    setCurrentStep(currentStep + 1);
+    console.log("big boy clicked");
+  }
+
   return (
-    <div className="px-[5%] py-12">
-      <div>
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/shipments">My shipments</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Add new shipment</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
+    <div className="px-[5%] lg:h-screen lg:overflow-hidden lg:px-0">
+      <div className="flex h-full flex-col pt-12 lg:flex-row lg:justify-between lg:pl-[5%]">
+        <div className="w-full lg:max-w-[25%]">
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/shipments">My shipments</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Add new shipment</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
 
-        <h1 className="mt-4 text-3xl font-bold">Add new shipment</h1>
+          <h1 className="mt-4 text-3xl font-bold">Add new shipment</h1>
 
-        <div className="mt-10 border-r border-solid border-[#DADADA]">
-          <ShippingFormStatus />
+          <div className="mt-10 border-solid border-[#DADADA] lg:border-r">
+            <Stepper steps={shippingFormSteps} />
+          </div>
+        </div>
+
+        <div className="h-full w-full pb-12 lg:max-w-[75%] lg:overflow-y-auto lg:pr-[5%] lg:pl-[5%]">
+          {currentStep < 4 && (
+            <div className="hidden items-center justify-end gap-2 lg:flex">
+              <Link
+                href="/shipments"
+                className={cn(
+                  buttonVariants({ variant: "default" }),
+                  "border border-solid border-[#DADADA] bg-transparent px-6 py-3 text-[#CACACA]"
+                )}
+              >
+                Cancel
+              </Link>
+
+              <Button
+                disabled={currentStep < shippingFormSteps.length - 1}
+                className="bg-[#003F38] px-6 py-3"
+                onClick={handleFinalSubmit}
+              >
+                <Check color="white" size={20} />
+                <span className="textGradient">Confirm Shipment</span>
+              </Button>
+            </div>
+          )}
+
+          <div className="mt-10 flex justify-center lg:mt-20">
+            {steps[currentStep]}
+          </div>
+
+          {currentStep < 4 && (
+            <div className="mt-10 flex items-center gap-2 lg:hidden">
+              <Link
+                href="/shipments"
+                className={cn(
+                  buttonVariants({ variant: "default" }),
+                  "border border-solid border-[#DADADA] bg-transparent px-6 py-3 text-[#CACACA]"
+                )}
+              >
+                Cancel
+              </Link>
+
+              <Button
+                disabled={currentStep < shippingFormSteps.length - 1}
+                className="grow bg-[#003F38] px-6 py-3"
+                onClick={handleFinalSubmit}
+              >
+                <Check color="white" size={20} />
+                <span className="textGradient">Confirm Shipment</span>
+              </Button>
+            </div>
+          )}
         </div>
       </div>
-      <div></div>
     </div>
   );
 }
-
-const ShippingFormStatus = () => {
-  return (
-    <div className="w-full">
-      <div className="relative">
-        {shippingFormSteps.map((step, index) => (
-          <ShippingStepItem
-            key={step}
-            completedStep={index === 0}
-            isCurrentStep={true}
-            index={index}
-            title={step}
-          />
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const shippingFormSteps = [
-  "Sender Information",
-  "Recipient Information",
-  "Package Details",
-  "Delivery Preferences",
-];
-
-const ShippingStepItem = ({
-  title,
-  index,
-  isCurrentStep,
-  completedStep,
-}: {
-  index: number;
-  title: string;
-  isCurrentStep: boolean;
-  completedStep: boolean;
-}) => {
-  return (
-    <div className="relative mb-8 flex gap-4">
-      {index < shippingFormSteps.length - 1 && (
-        <div className="absolute top-7 left-[10px] z-[51] h-full w-[1px] -translate-x-[50%] bg-[#929292]"></div>
-      )}
-
-      <div className="relative z-[52] mt-1 mr-4">
-        {completedStep ? (
-          <div className="flex aspect-square h-5 w-5 items-center justify-center rounded-full border border-solid border-[#65B40E] bg-[#65B40E]">
-            <Check color="white" size={10} />
-          </div>
-        ) : isCurrentStep ? (
-          <div className="flex aspect-square h-5 w-5 items-center justify-center rounded-full border border-solid border-[#4B5563] bg-white">
-            <div className="w-h-1 aspect-square h-1 rounded-full bg-[#091011]"></div>
-          </div>
-        ) : (
-          <div className="aspect-square h-5 w-5 rounded-full border border-solid border-[#65B40E] bg-white"></div>
-        )}
-      </div>
-
-      <div className="flex-1">
-        <div className="flex items-start justify-between">
-          <div>
-            <h3 className={`text-base font-medium text-[#252525]`}>{title}</h3>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};

@@ -1,6 +1,6 @@
-import { PrimaryToSecondary2 } from "../utils/customStyles";
-import Feature from "@/app/components/feature";
-import { TFeature } from "@/app/utils/types";
+import Feature from "@/components/pages/home/feature";
+import { PrimaryToSecondary2 } from "@/lib";
+import { TFeature } from "@/types/home";
 
 export default function Features() {
   const featuresList: TFeature[] = [
@@ -30,11 +30,13 @@ export default function Features() {
     <section className={`w-full max-w-[85%] space-y-10 py-16`}>
       <div>
         <h2 className={`text-lp-secondaryTwo md:text-lg`}>OUR FEATURES</h2>
-        <h1 className={`w-full text-3xl sm:text-4xl lg:text-6xl font-bold ${PrimaryToSecondary2}`}>
+        <h1
+          className={`w-full text-3xl font-bold sm:text-4xl lg:text-6xl ${PrimaryToSecondary2}`}
+        >
           Why choose us?
         </h1>
       </div>
-      <div className={`grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5`}>
+      <div className={`grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4`}>
         {featuresList.map((feature) => (
           <Feature
             key={feature.title}

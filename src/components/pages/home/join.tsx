@@ -1,10 +1,12 @@
+import { PrimaryToSecondary2, WhiteToSecondary } from "@/lib";
 import Image from "next/image";
-import { PrimaryToSecondary2, WhiteToSecondary } from "@/app/utils/customStyles";
 import Link from "next/link";
 
 export default function Join() {
   return (
-    <section className={`relative hidden sm:block w-full px-8 max-w-[90%] lg:max-w-[85%] my-15`}>
+    <section
+      className={`relative my-15 hidden w-full max-w-[90%] px-8 sm:block lg:max-w-[85%]`}
+    >
       <Image
         src={`/background/ripple.svg`}
         alt={`grid`}
@@ -15,19 +17,24 @@ export default function Join() {
       <div
         className={`absolute inset-0 flex flex-col items-center justify-center py-20 text-center`}
       >
-        <h1 className={`${WhiteToSecondary} text-2xl sm:text-3xl md:text-4xl xl:text-6xl font-bold`}>
+        <h1
+          className={`${WhiteToSecondary} text-2xl font-bold sm:text-3xl md:text-4xl xl:text-6xl`}
+        >
           Join Us in Making a Difference!
         </h1>
-        <p className={`flex flex-col sm:text-lg lg:text-xl text-white`}>
+        <p className={`flex flex-col text-white sm:text-lg lg:text-xl`}>
           <span>
             Whether you&#39;re sending a small parcel or a large package, choose
             a
           </span>
           <span>delivery service that cares for the environment.</span>
         </p>
-        <Link href={`/signup`} className={`bg-white flex gap-2.5 rounded-lg px-12 py-4 mt-4 lg:mt-12`}>
+        <Link
+          href={`/signup`}
+          className={`mt-4 flex gap-2.5 rounded-lg bg-white px-12 py-4 lg:mt-12`}
+        >
           📦{" "}
-          <span className={`${PrimaryToSecondary2} lg:text-xl font-medium`}>
+          <span className={`${PrimaryToSecondary2} font-medium lg:text-xl`}>
             Get Started Today
           </span>{" "}
         </Link>
@@ -37,7 +44,7 @@ export default function Join() {
         alt={`grid`}
         width={132}
         height={70}
-        className={`absolute hidden lg:block bottom-15 right-40`}
+        className={`absolute right-40 bottom-15 hidden lg:block`}
       />
     </section>
   );
