@@ -1,9 +1,9 @@
 "use server";
 
-import { ErrorResponse, LoginResponse, SignupResponse } from "@/types/auth";
+import { LoginResponse, SignupResponse } from "@/types/auth";
 import { cookies } from "next/headers";
-
 import axios from "axios";
+import { ErrorResponse } from "@/types";
 
 interface LoginInputs {
   email: string;
@@ -25,7 +25,7 @@ export async function login(data: LoginInputs) {
     if (res.data.success) {
       const token = res.data.token;
       (await cookies()).set("token", token, {
-        httpOnly: true,
+        httpOnly: false,
         secure: process.env.NODE_ENV === "production",
         path: "/",
       });

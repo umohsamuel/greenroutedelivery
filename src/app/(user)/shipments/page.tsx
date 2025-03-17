@@ -1,10 +1,29 @@
-import { columns, DataTable, shipments } from "@/components/table/shipments";
+import { columns, DataTable } from "@/components/table/shipments";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { getShipments } from "@/server/functions";
+import { formatDate } from "@/utils";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 
-export default function Shipments() {
+export default async function Shipments() {
+  const shipmentsData = await getShipments();
+
+  console.log({ shipmentsData });
+
+  const parsedShipmentsData = shipmentsData.data?.success
+    ? shipmentsData.data.data.map((sm) => ({
+        id: sm._id,
+        tracking_id: sm.trackingId,
+        amount: sm.amount ?? "N/A",
+        status: sm.paymentStatus,
+        dateCreated: formatDate(sm.createdAt),
+        pickupLocation: `${sm.source.address}, ${sm.source.city}, ${sm.source.state}, ${sm.source.country}`,
+        destination: `${sm.destination.address}, ${sm.destination.city}, ${sm.destination.state}, ${sm.destination.country}`,
+        deliveryStatus: sm.status,
+      }))
+    : [];
+
   return (
     <div className="px-[5%] py-12">
       <div className="flex flex-col gap-4 lg:flex-row lg:justify-between">
@@ -25,7 +44,7 @@ export default function Shipments() {
       </div>
 
       <div className="mt-10">
-        <DataTable columns={columns} data={shipments} />
+        <DataTable columns={columns} data={parsedShipmentsData} />
       </div>
     </div>
   );

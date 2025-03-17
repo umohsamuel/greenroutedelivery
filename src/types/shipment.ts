@@ -1,10 +1,12 @@
+import { DeliveryStatus, PaymentStatus } from "./user";
+
 export type Shipment = {
   id: string;
-  amount: number;
-  status: "pending" | "successful" | "failed";
+  tracking_id: string;
+  amount: string;
+  status: PaymentStatus;
   dateCreated: string;
   pickupLocation: string;
   destination: string;
-  estimatedDelivery: string;
-  deliveryStatus: "cancelled" | "in-transit" | "delivered";
+  deliveryStatus: DeliveryStatus;
 };

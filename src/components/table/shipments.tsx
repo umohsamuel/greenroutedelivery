@@ -21,28 +21,25 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import { ArrowDownUp, Filter, Search, Pencil, Trash2 } from "lucide-react";
+import { ArrowDownUp, Filter, Search } from "lucide-react";
 import { DataTablePagination } from "./table-pagination";
 import { useState } from "react";
 import { ShipmentDetails } from "../modal/shipment-details";
 import { Shipment } from "@/types";
+import { formatAmount } from "@/utils";
 
 export const columns: ColumnDef<Shipment>[] = [
   {
-    accessorKey: "id",
+    accessorKey: "tracking_id",
     header: "Tracking ID",
   },
   {
     accessorKey: "amount",
     header: "Amount",
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"));
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount);
+      const amount = parseFloat(row.getValue("amount")) || 0;
 
-      return <div className="font-medium">{formatted}</div>;
+      return <div className="font-medium">{formatAmount(amount)}</div>;
     },
   },
   {
@@ -88,10 +85,6 @@ export const columns: ColumnDef<Shipment>[] = [
     header: "Destination",
   },
   {
-    accessorKey: "estimatedDelivery",
-    header: "Estimated Delivery",
-  },
-  {
     accessorKey: "deliveryStatus",
     header: "Delivery Status",
     cell: ({ row }) => {
@@ -119,22 +112,6 @@ export const columns: ColumnDef<Shipment>[] = [
           {deliveryStatus}
         </div>
       );
-    },
-  },
-  {
-    id: "edit",
-    cell: ({ row }) => {
-      const _shipment = row.original;
-
-      return <Pencil size={16} color="#6B6B6B" />;
-    },
-  },
-  {
-    id: "delete",
-    cell: ({ row }) => {
-      const _shipment = row.original;
-
-      return <Trash2 size={16} color="#ED2115" />;
     },
   },
 ];
@@ -191,7 +168,8 @@ export function DataTable<TData extends Shipment, TValue>({
     <div className="flex flex-col gap-6 rounded-[8px] border border-solid border-[#EEEEEE] p-3 lg:p-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between lg:gap-0">
         <h3 className="text-lg font-bold text-[#101828]">
-          All shipments <span className="font-medium text-[#65B40E]">(23)</span>
+          All shipments{" "}
+          <span className="font-medium text-[#65B40E]">({data.length})</span>
         </h3>
 
         <div className="flex items-center gap-2">
@@ -204,9 +182,14 @@ export function DataTable<TData extends Shipment, TValue>({
             <Input
               placeholder="Search Tracking ID"
               className="h-[38px] pl-10"
-              value={(table.getColumn("id")?.getFilterValue() as string) ?? ""}
+              value={
+                (table.getColumn("tracking_id")?.getFilterValue() as string) ??
+                ""
+              }
               onChange={(event) =>
-                table.getColumn("id")?.setFilterValue(event.target.value)
+                table
+                  .getColumn("tracking_id")
+                  ?.setFilterValue(event.target.value)
               }
             />
           </div>
@@ -281,176 +264,3 @@ export function DataTable<TData extends Shipment, TValue>({
     </div>
   );
 }
-
-export const shipments: Shipment[] = [
-  {
-    id: "728ed52f",
-    amount: 100,
-    status: "pending",
-    dateCreated: "2025-03-10",
-    pickupLocation: "New York, NY",
-    destination: "Los Angeles, CA",
-    estimatedDelivery: "2025-03-20",
-    deliveryStatus: "in-transit",
-  },
-  {
-    id: "92adf830",
-    amount: 250,
-    status: "successful",
-    dateCreated: "2025-03-08",
-    pickupLocation: "Chicago, IL",
-    destination: "Houston, TX",
-    estimatedDelivery: "2025-03-18",
-    deliveryStatus: "delivered",
-  },
-  {
-    id: "15be9842",
-    amount: 75,
-    status: "failed",
-    dateCreated: "2025-03-05",
-    pickupLocation: "Miami, FL",
-    destination: "Seattle, WA",
-    estimatedDelivery: "2025-03-15",
-    deliveryStatus: "cancelled",
-  },
-  {
-    id: "c3a17d6b",
-    amount: 180,
-    status: "pending",
-    dateCreated: "2025-03-12",
-    pickupLocation: "San Francisco, CA",
-    destination: "Denver, CO",
-    estimatedDelivery: "2025-03-22",
-    deliveryStatus: "in-transit",
-  },
-  {
-    id: "7f4d9e1c",
-    amount: 90,
-    status: "successful",
-    dateCreated: "2025-03-07",
-    pickupLocation: "Austin, TX",
-    destination: "Boston, MA",
-    estimatedDelivery: "2025-03-17",
-    deliveryStatus: "delivered",
-  },
-  {
-    id: "28a94e5d",
-    amount: 120,
-    status: "pending",
-    dateCreated: "2025-03-11",
-    pickupLocation: "Detroit, MI",
-    destination: "Phoenix, AZ",
-    estimatedDelivery: "2025-03-21",
-    deliveryStatus: "in-transit",
-  },
-  {
-    id: "4eaf71b2",
-    amount: 200,
-    status: "failed",
-    dateCreated: "2025-03-06",
-    pickupLocation: "Portland, OR",
-    destination: "Atlanta, GA",
-    estimatedDelivery: "2025-03-16",
-    deliveryStatus: "cancelled",
-  },
-  {
-    id: "9bf3846a",
-    amount: 50,
-    status: "successful",
-    dateCreated: "2025-03-09",
-    pickupLocation: "Las Vegas, NV",
-    destination: "Philadelphia, PA",
-    estimatedDelivery: "2025-03-19",
-    deliveryStatus: "delivered",
-  },
-  {
-    id: "61cae2d8",
-    amount: 300,
-    status: "pending",
-    dateCreated: "2025-03-13",
-    pickupLocation: "Seattle, WA",
-    destination: "Orlando, FL",
-    estimatedDelivery: "2025-03-23",
-    deliveryStatus: "in-transit",
-  },
-  {
-    id: "3d2f89b7",
-    amount: 110,
-    status: "successful",
-    dateCreated: "2025-03-04",
-    pickupLocation: "Dallas, TX",
-    destination: "San Diego, CA",
-    estimatedDelivery: "2025-03-14",
-    deliveryStatus: "delivered",
-  },
-  {
-    id: "b5e6d123",
-    amount: 145,
-    status: "failed",
-    dateCreated: "2025-03-02",
-    pickupLocation: "Charlotte, NC",
-    destination: "Indianapolis, IN",
-    estimatedDelivery: "2025-03-12",
-    deliveryStatus: "cancelled",
-  },
-  {
-    id: "f0b4728d",
-    amount: 130,
-    status: "pending",
-    dateCreated: "2025-03-14",
-    pickupLocation: "Nashville, TN",
-    destination: "Kansas City, MO",
-    estimatedDelivery: "2025-03-24",
-    deliveryStatus: "in-transit",
-  },
-  {
-    id: "29c6f8a4",
-    amount: 190,
-    status: "successful",
-    dateCreated: "2025-03-03",
-    pickupLocation: "Columbus, OH",
-    destination: "San Antonio, TX",
-    estimatedDelivery: "2025-03-13",
-    deliveryStatus: "delivered",
-  },
-  {
-    id: "87a945f3",
-    amount: 160,
-    status: "failed",
-    dateCreated: "2025-03-01",
-    pickupLocation: "Milwaukee, WI",
-    destination: "Tampa, FL",
-    estimatedDelivery: "2025-03-11",
-    deliveryStatus: "cancelled",
-  },
-  {
-    id: "d4f1839b",
-    amount: 170,
-    status: "pending",
-    dateCreated: "2025-03-15",
-    pickupLocation: "Sacramento, CA",
-    destination: "Raleigh, NC",
-    estimatedDelivery: "2025-03-25",
-    deliveryStatus: "in-transit",
-  },
-  {
-    id: "c8f92e76",
-    amount: 210,
-    status: "successful",
-    dateCreated: "2025-03-16",
-    pickupLocation: "Denver, CO",
-    destination: "Salt Lake City, UT",
-    estimatedDelivery: "2025-03-26",
-    deliveryStatus: "delivered",
-  },
-  {
-    id: "6a45d21e",
-    amount: 140,
-    status: "failed",
-    dateCreated: "2025-03-17",
-    pickupLocation: "Minneapolis, MN",
-    destination: "Baltimore, MD",
-    estimatedDelivery: "2025-03-27",
-    deliveryStatus: "cancelled",
-  },
-];

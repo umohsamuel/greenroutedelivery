@@ -1,4 +1,4 @@
-type Role = "client" | "admin";
+export type Role = "client" | "admin";
 type User = {
   id: string;
   name: string;
@@ -12,11 +12,6 @@ export interface SignupResponse {
     token: string;
     user: User;
   };
-}
-
-export interface ErrorResponse {
-  success: false;
-  error: string;
 }
 
 export interface LoginResponse {
