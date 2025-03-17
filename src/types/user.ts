@@ -12,7 +12,7 @@ export interface UserResponse {
   };
 }
 
-type ShipmentType = "express" | "standard";
+export type ShipmentType = "express" | "standard";
 
 export type PaymentStatus = "pending" | "successful";
 
@@ -33,6 +33,24 @@ export type DeliveryStatus =
   | "damaged-in-transit"
   | "cancelled";
 
+interface Dimensions {
+  height: number;
+  width: number;
+  length: number;
+}
+
+export interface PackageDetails {
+  dimensions: Dimensions;
+  weight: number;
+}
+
+export interface Address {
+  country: string;
+  state: string;
+  city: string;
+  address: string;
+}
+
 interface ShipmentStatus {
   shipment: DeliveryStatus;
   _id: string;
@@ -40,26 +58,9 @@ interface ShipmentStatus {
 }
 
 interface Shipment {
-  source: {
-    address: string;
-    state: string;
-    city: string;
-    country: string;
-  };
-  destination: {
-    address: string;
-    state: string;
-    city: string;
-    country: string;
-  };
-  packageDetails: {
-    dimensions: {
-      length: number;
-      width: number;
-      height: number;
-    };
-    weight: number;
-  };
+  source: Address;
+  destination: Address;
+  packageDetails: PackageDetails;
   _id: string;
   user: string;
   status: DeliveryStatus;
@@ -82,4 +83,24 @@ export interface ShipmentsResponse {
 export interface AShipmentResponse {
   success: boolean;
   data: Shipment;
+}
+
+interface ShipmentResponse {
+  user: string;
+  source: Address;
+  destination: Address;
+  packageDetails: PackageDetails;
+  status: DeliveryStatus;
+  paymentStatus: PaymentStatus;
+  shipmentType: ShipmentType;
+  _id: string;
+  trackingId: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
+export interface AddShipmentResponse {
+  success: boolean;
+  data: ShipmentResponse;
 }

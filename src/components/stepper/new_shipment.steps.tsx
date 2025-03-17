@@ -22,23 +22,103 @@ import {
 } from "@/schemas";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { ShipmentType } from "@/types";
+import { useEffect } from "react";
+
+export const SenderInfoForm = () => {
+  const currentStep = useShipmentStore((state) => state.currentFormStep);
+  const setCurrentStep = useShipmentStore((state) => state.setCurrentFormStep);
+  const setNewShipment = useShipmentStore((state) => state.setNewShipment);
+
+  const form = useForm<z.infer<typeof senderInfoSchema>>({
+    resolver: zodResolver(senderInfoSchema),
+    defaultValues: {
+      fullname: "",
+      phone_no: "",
+      country: "",
+      state: "",
+      city: "",
+      address: "",
+    },
+  });
+
+  const onSubmit = async (data: z.infer<typeof senderInfoSchema>) => {
+    console.log(data);
+    setNewShipment({
+      source: {
+        address: data.address,
+        city: data.city,
+        country: data.country,
+        state: data.state,
+      },
+    });
+    setCurrentStep(currentStep + 1);
+  };
+
+  return (
+    <div className="w-full max-w-[480px]">
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex w-full flex-col gap-10"
+        >
+          <div className="flex flex-col gap-1 text-center">
+            <h2 className="text-2xl font-bold">Sender Information</h2>
+            <p className="text-base font-light text-[#252525]">
+              Enter details about the sender for a smooth pickup process.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-6">
+            {senderInfoArr.map((input, index) => (
+              <FormInputItem<SenderInfoInputs>
+                className={`${index > 1 ? "col-span-1" : "col-span-2"}`}
+                key={input.name}
+                input={input}
+                form={form}
+              />
+            ))}
+          </div>
+
+          <div className="flex justify-end">
+            <Button type="submit" className="h-[60px] bg-[#003F38] px-12">
+              <span className="textGradient">Continue</span>
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </div>
+  );
+};
 
 export const RecipientInfoForm = () => {
   const currentStep = useShipmentStore((state) => state.currentFormStep);
   const setCurrentStep = useShipmentStore((state) => state.setCurrentFormStep);
+  const setNewShipment = useShipmentStore((state) => state.setNewShipment);
 
   const form = useForm<z.infer<typeof recipientInfoSchema>>({
     resolver: zodResolver(recipientInfoSchema),
     defaultValues: {
       fullname: "",
       phone_no: "",
-      delivery_address: "",
+      country: "",
+      state: "",
+      city: "",
+      address: "",
       delivery_instructions: "",
     },
   });
 
   const onSubmit = async (data: z.infer<typeof recipientInfoSchema>) => {
     console.log(data);
+    setNewShipment({
+      destination: {
+        address: data.address,
+        city: data.city,
+        country: data.country,
+        state: data.state,
+      },
+    });
 
     setCurrentStep(currentStep + 1);
   };
@@ -57,9 +137,10 @@ export const RecipientInfoForm = () => {
             </p>
           </div>
 
-          <div className="flex flex-col gap-6">
-            {recipientInfoArr.map((input) => (
+          <div className="grid grid-cols-2 gap-6">
+            {recipientInfoArr.map((input, index) => (
               <FormInputItem<RecipientInfoInputs>
+                className={`${index > 1 && index < 6 ? "col-span-1" : "col-span-2"}`}
                 key={input.name}
                 input={input}
                 form={form}
@@ -92,6 +173,7 @@ export const RecipientInfoForm = () => {
 export const PackageDetailsForm = () => {
   const currentStep = useShipmentStore((state) => state.currentFormStep);
   const setCurrentStep = useShipmentStore((state) => state.setCurrentFormStep);
+  const setNewShipment = useShipmentStore((state) => state.setNewShipment);
 
   const form = useForm<z.infer<typeof packageInfoSchema>>({
     resolver: zodResolver(packageInfoSchema),
@@ -106,6 +188,16 @@ export const PackageDetailsForm = () => {
 
   const onSubmit = async (data: z.infer<typeof packageInfoSchema>) => {
     console.log(data);
+    setNewShipment({
+      packageDetails: {
+        dimensions: {
+          height: parseInt(data.height),
+          width: parseInt(data.width),
+          length: parseInt(data.length),
+        },
+        weight: parseInt(data.weight),
+      },
+    });
 
     setCurrentStep(currentStep + 1);
   };
@@ -159,6 +251,7 @@ export const PackageDetailsForm = () => {
 export const DeliveryPreferencesForm = () => {
   const currentStep = useShipmentStore((state) => state.currentFormStep);
   const setCurrentStep = useShipmentStore((state) => state.setCurrentFormStep);
+  const setNewShipment = useShipmentStore((state) => state.setNewShipment);
 
   const form = useForm<z.infer<typeof deliveryPrefSchema>>({
     resolver: zodResolver(deliveryPrefSchema),
@@ -167,10 +260,17 @@ export const DeliveryPreferencesForm = () => {
     },
   });
 
+  const deliveryType = form.watch("delivery_type");
+
+  useEffect(() => {
+    if (deliveryType) {
+      setNewShipment({ shipmentType: deliveryType as ShipmentType });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deliveryType]);
+
   const onSubmit = async (data: z.infer<typeof deliveryPrefSchema>) => {
     console.log(data);
-
-    setCurrentStep(currentStep + 1);
   };
 
   return (
@@ -207,59 +307,6 @@ export const DeliveryPreferencesForm = () => {
             >
               <ArrowLeft color="#6B6B6B" size={20} />
               <span>Previous</span>
-            </Button>
-          </div>
-        </form>
-      </Form>
-    </div>
-  );
-};
-
-export const SenderInfoForm = () => {
-  const currentStep = useShipmentStore((state) => state.currentFormStep);
-  const setCurrentStep = useShipmentStore((state) => state.setCurrentFormStep);
-
-  const form = useForm<z.infer<typeof senderInfoSchema>>({
-    resolver: zodResolver(senderInfoSchema),
-    defaultValues: {
-      fullname: "",
-      phone_no: "",
-      pickup_address: "",
-    },
-  });
-
-  const onSubmit = async (data: z.infer<typeof senderInfoSchema>) => {
-    console.log(data);
-    setCurrentStep(currentStep + 1);
-  };
-
-  return (
-    <div className="w-full max-w-[480px]">
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="flex w-full flex-col gap-10"
-        >
-          <div className="flex flex-col gap-1 text-center">
-            <h2 className="text-2xl font-bold">Sender Information</h2>
-            <p className="text-base font-light text-[#252525]">
-              Enter details about the sender for a smooth pickup process.
-            </p>
-          </div>
-
-          <div className="flex flex-col gap-6">
-            {senderInfoArr.map((input) => (
-              <FormInputItem<SenderInfoInputs>
-                key={input.name}
-                input={input}
-                form={form}
-              />
-            ))}
-          </div>
-
-          <div className="flex justify-end">
-            <Button type="submit" className="h-[60px] bg-[#003F38] px-12">
-              <span className="textGradient">Continue</span>
             </Button>
           </div>
         </form>

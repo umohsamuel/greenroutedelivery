@@ -15,13 +15,39 @@ import { Stepper } from "@/components/stepper";
 import { shippingFormSteps, steps } from "@/lib/shipping";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { toast } from "react-toastify";
+import { createShipment } from "@/server/actions/user";
+import { useState } from "react";
 
 export default function NewShipment() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const currentStep = useShipmentStore((state) => state.currentFormStep);
   const setCurrentStep = useShipmentStore((state) => state.setCurrentFormStep);
+  const newShipmentData = useShipmentStore((state) => state.newShipment);
 
-  function handleFinalSubmit() {
-    setCurrentStep(currentStep + 1);
+  async function handleFinalSubmit() {
+    setIsSubmitting(true);
+    console.log("final submit", newShipmentData);
+
+    await createShipment(newShipmentData)
+      .then((res) => {
+        if (res.data) {
+          if (res.data.success) {
+            toast.success("Shipment created successfully");
+            console.log("shipment created", res.data);
+
+            setCurrentStep(currentStep + 1);
+          } else {
+            toast.error(res.error || "Failed to create shipment");
+          }
+        } else {
+          toast.error(res.error ?? "An error occurred");
+        }
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+      });
+
     console.log("big boy clicked");
   }
 
@@ -62,12 +88,16 @@ export default function NewShipment() {
               </Link>
 
               <Button
-                disabled={currentStep < shippingFormSteps.length - 1}
+                disabled={
+                  currentStep < shippingFormSteps.length - 1 || isSubmitting
+                }
                 className="bg-[#003F38] px-6 py-3"
                 onClick={handleFinalSubmit}
               >
                 <Check color="white" size={20} />
-                <span className="textGradient">Confirm Shipment</span>
+                <span className="textGradient">
+                  {isSubmitting ? "..." : "Confirm Shipment"}
+                </span>
               </Button>
             </div>
           )}
@@ -89,12 +119,16 @@ export default function NewShipment() {
               </Link>
 
               <Button
-                disabled={currentStep < shippingFormSteps.length - 1}
+                disabled={
+                  currentStep < shippingFormSteps.length - 1 || isSubmitting
+                }
                 className="grow bg-[#003F38] px-6 py-3"
                 onClick={handleFinalSubmit}
               >
                 <Check color="white" size={20} />
-                <span className="textGradient">Confirm Shipment</span>
+                <span className="textGradient">
+                  {isSubmitting ? "..." : "Confirm Shipment"}
+                </span>
               </Button>
             </div>
           )}

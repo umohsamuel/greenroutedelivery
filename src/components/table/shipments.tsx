@@ -137,7 +137,7 @@ export function DataTable<TData extends Shipment, TValue>({
   }
 
   const table = useReactTable({
-    data,
+    data: data.reverse(),
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),

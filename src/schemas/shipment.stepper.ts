@@ -18,25 +18,49 @@ export const senderInfoArr = [
     name: "phone_no" as const,
   },
   {
-    label: "Pickup Address",
+    label: "Country",
     type: "text",
-    placeholder: "Pickup Address",
-    name: "pickup_address" as const,
+    placeholder: "Country",
+    name: "country" as const,
+  },
+  {
+    label: "State",
+    type: "text",
+    placeholder: "State",
+    name: "state" as const,
+  },
+  {
+    label: "City",
+    type: "text",
+    placeholder: "City",
+    name: "city" as const,
+  },
+  {
+    label: "Address",
+    type: "text",
+    placeholder: "Address",
+    name: "address" as const,
   },
 ];
 
 export const senderInfoSchema = z.object({
   fullname: z.string().nonempty("Full name is required"),
-  phone_no: z.string().regex(/^\+?[1-9]\d{7,14}$/, "Invalid phone number"),
-  pickup_address: z.string().nonempty("Pickup address is required"),
+  phone_no: z.string().nonempty("Invalid phone number"),
+  country: z.string().nonempty("Country is required"),
+  state: z.string().nonempty("State is required"),
+  city: z.string().nonempty("City is required"),
+  address: z.string().nonempty("Address is required"),
 });
 
 // ----------------------------------------------------------
 
 export const recipientInfoSchema = z.object({
   fullname: z.string().nonempty("Full name is required"),
-  phone_no: z.string().regex(/^\+?[1-9]\d{7,14}$/, "Invalid phone number"),
-  delivery_address: z.string().nonempty("Pickup address is required"),
+  phone_no: z.string().nonempty("Invalid phone number"),
+  country: z.string().nonempty("Country is required"),
+  state: z.string().nonempty("State is required"),
+  city: z.string().nonempty("City is required"),
+  address: z.string().nonempty("Address is required"),
   delivery_instructions: z.string().optional(),
 });
 
@@ -56,10 +80,28 @@ export const recipientInfoArr = [
     name: "phone_no" as const,
   },
   {
-    label: "Delivery Address",
+    label: "Country",
     type: "text",
-    placeholder: "Delivery Address",
-    name: "delivery_address" as const,
+    placeholder: "Country",
+    name: "country" as const,
+  },
+  {
+    label: "State",
+    type: "text",
+    placeholder: "State",
+    name: "state" as const,
+  },
+  {
+    label: "City",
+    type: "text",
+    placeholder: "City",
+    name: "city" as const,
+  },
+  {
+    label: "Address",
+    type: "text",
+    placeholder: "Address",
+    name: "address" as const,
   },
   {
     label: "Additional Delivery Instructions (Optional)",

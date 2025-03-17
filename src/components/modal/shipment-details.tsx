@@ -6,7 +6,7 @@ import { Shipment } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { LoaderCircle, X } from "lucide-react";
 import ReactDOM from "react-dom";
-import { formatDate } from "../../utils/formatDate";
+import { formatDate, formatTime } from "../../utils/formatDate";
 import { formatAmount } from "@/utils";
 
 interface ShipmentDetailsProps {
@@ -80,6 +80,7 @@ export function ShipmentDetails({
           title: us.shipment,
           completed: true,
           timestamp: formatDate(us.timestamp),
+          time: formatTime(us.timestamp),
           id: us._id,
         }))
       : [];
@@ -154,6 +155,7 @@ interface TrackingStatusProps {
   statusSteps?: {
     title: string;
     completed: boolean;
+    time: string;
     timestamp: string;
     id: string;
   }[];
@@ -165,6 +167,11 @@ const TrackingStatus = ({ statusSteps }: TrackingStatusProps) => {
       <h1 className="mb-4 text-base font-medium">Tracking Status</h1>
 
       <div className="relative">
+        {statusSteps && statusSteps.length < 1 && (
+          <p className="text-center text-base font-normal text-gray-400">
+            No status updates yet.
+          </p>
+        )}
         {statusSteps &&
           statusSteps.map((step, index) => (
             <div key={index} className="relative mb-8 flex gap-4">
@@ -191,7 +198,7 @@ const TrackingStatus = ({ statusSteps }: TrackingStatusProps) => {
                       {step.title}
                     </h3>
                     <p className="mt-1 text-xs font-normal text-[#101828]">
-                      {step.id}
+                      {step.time}
                     </p>
                   </div>
                   <span className="text-sm text-gray-400">
