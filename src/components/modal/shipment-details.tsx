@@ -1,14 +1,18 @@
 "use client";
 
 import { useStopScroll } from "@/hooks";
-import { Shipment } from "@/types";
-import { X } from "lucide-react";
+import { getAShipment } from "@/server/functions/user.client";
+import { TShipment } from "@/types";
+import { useQuery } from "@tanstack/react-query";
+import { LoaderCircle, X } from "lucide-react";
 import ReactDOM from "react-dom";
+import { formatDate, formatTime } from "../../utils/formatDate";
+import { formatAmount } from "@/utils";
 
 interface ShipmentDetailsProps {
   isOpen: boolean;
   onClose: () => void;
-  shipment: Shipment | null;
+  shipment: TShipment | null;
 }
 
 export function ShipmentDetails({
@@ -16,7 +20,70 @@ export function ShipmentDetails({
   onClose,
   shipment,
 }: ShipmentDetailsProps) {
+  const { isPending, error, data } = useQuery({
+    queryKey: ["getAShipment", shipment?.id],
+    queryFn: () => getAShipment(shipment?.id ?? ""),
+    enabled: !!shipment?.id,
+  });
+
+  console.log({ data });
+
   useStopScroll({ isOpen });
+
+  const basicInfo =
+    data && data.data?.success
+      ? [
+          {
+            title: "Date created",
+            desc: formatDate(data.data.data.createdAt),
+          },
+          {
+            title: "Amount",
+            desc: formatAmount(parseFloat(data.data.data.amount) || 0),
+          },
+          {
+            title: "Total Weight",
+            desc: data.data.data.packageDetails.weight + "kg",
+          },
+          {
+            title: "Pickup address",
+            desc: `${data.data.data.source.address}, ${data.data.data.source.city}, ${data.data.data.source.state}, ${data.data.data.source.country}`,
+          },
+          {
+            title: "Delivery address",
+            desc: `${data.data.data.destination.address}, ${data.data.data.destination.city}, ${data.data.data.destination.state}, ${data.data.data.destination.country}`,
+          },
+        ]
+      : [];
+
+  const packageDetails =
+    data && data.data?.success
+      ? [
+          {
+            title: "Length",
+            desc: data.data.data.packageDetails.dimensions.length + "inches",
+          },
+          {
+            title: "Width",
+            desc: data.data.data.packageDetails.dimensions.width + "inches",
+          },
+          {
+            title: "Height",
+            desc: data.data.data.packageDetails.dimensions.height + "inches",
+          },
+        ]
+      : [];
+
+  const updatedStatus =
+    data && data.data?.success
+      ? data.data.data.updatedStatus.map((us) => ({
+          title: us.shipment,
+          completed: true,
+          timestamp: formatDate(us.timestamp),
+          time: formatTime(us.timestamp),
+          id: us._id,
+        }))
+      : [];
 
   if (!isOpen) return null;
 
@@ -28,15 +95,43 @@ export function ShipmentDetails({
           <X onClick={onClose} className="cursor-pointer" />
         </div>
 
-        {shipment ? (
+        {isPending ? (
+          <div className="flex w-full animate-spin items-center justify-center">
+            <LoaderCircle size={24} color="#65B40E" />
+          </div>
+        ) : error ? (
+          "Error occured while fetching shipment details"
+        ) : data && data.data?.success ? (
           <>
-            <div className="border-y border-dotted border-[#DADADA] py-5">
-              <ShipmentItem
-                title="Pickup Location"
-                desc={shipment.pickupLocation}
-              />
+            <div className="mb-4 flex items-center justify-between">
+              <div className="flex flex-col text-base text-[#252525]">
+                <h4 className="font-normal">Tracking ID</h4>
+                <p className="text-2xl font-medium">
+                  {data.data.data.trackingId}
+                </p>
+              </div>
             </div>
-            <TrackingStatus />
+
+            <div className="grid grid-cols-2 gap-9 border-y border-dotted border-[#DADADA] py-5">
+              {basicInfo.map((bi) => (
+                <ShipmentItem key={bi.title} title={bi.title} desc={bi.desc} />
+              ))}
+            </div>
+
+            <div className="flex flex-col gap-4 border-b border-dotted border-[#DADADA] py-5">
+              <h4 className="text-base font-medium">Package Details</h4>
+
+              <div className="grid grid-cols-3 gap-9">
+                {packageDetails.map((bi) => (
+                  <ShipmentItem
+                    key={bi.title}
+                    title={bi.title}
+                    desc={bi.desc}
+                  />
+                ))}
+              </div>
+            </div>
+            <TrackingStatus statusSteps={updatedStatus} />
           </>
         ) : (
           "No shipment details found."
@@ -56,77 +151,64 @@ const ShipmentItem = ({ title, desc }: { title: string; desc: string }) => {
   );
 };
 
-const TrackingStatus = () => {
+interface TrackingStatusProps {
+  statusSteps?: {
+    title: string;
+    completed: boolean;
+    time: string;
+    timestamp: string;
+    id: string;
+  }[];
+}
+
+const TrackingStatus = ({ statusSteps }: TrackingStatusProps) => {
   return (
     <div className="w-full py-5">
       <h1 className="mb-4 text-base font-medium">Tracking Status</h1>
 
       <div className="relative">
-        {statusSteps.map((step, index) => (
-          <div key={index} className="relative mb-8 flex gap-4">
-            {index < statusSteps.length - 1 && (
-              <div className="absolute top-6 left-[8px] z-[51] h-full w-[1px] -translate-x-[50%] bg-[#929292]"></div>
-            )}
-
-            <div className="relative z-[52] mt-1 mr-4">
-              {index === 0 ? (
-                <div className="flex aspect-square h-4 w-4 items-center justify-center rounded-full border border-solid border-[#65B40E] bg-white">
-                  <div className="w-h-1 aspect-square h-1 rounded-full bg-green-500"></div>
-                </div>
-              ) : (
-                <div className="aspect-square h-4 w-4 rounded-full border border-solid border-[#65B40E] bg-white"></div>
+        {statusSteps && statusSteps.length < 1 && (
+          <p className="text-center text-base font-normal text-gray-400">
+            No status updates yet.
+          </p>
+        )}
+        {statusSteps &&
+          statusSteps.map((step, index) => (
+            <div key={index} className="relative mb-8 flex gap-4">
+              {index < statusSteps.length - 1 && (
+                <div className="absolute top-6 left-[8px] z-[51] h-full w-[1px] -translate-x-[50%] bg-[#929292]"></div>
               )}
-            </div>
 
-            <div className="flex-1">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className={`text-base font-medium text-[#252525]`}>
-                    {step.title}
-                  </h3>
-                  <p className="mt-1 text-xs font-normal text-[#101828]">
-                    {step.location}
-                  </p>
+              <div className="relative z-[52] mt-1 mr-4">
+                {step.completed ? (
+                  <div className="flex aspect-square h-4 w-4 items-center justify-center rounded-full border border-solid border-[#65B40E] bg-white">
+                    <div className="w-h-1 aspect-square h-1 rounded-full bg-green-500"></div>
+                  </div>
+                ) : (
+                  <div className="aspect-square h-4 w-4 rounded-full border border-solid border-[#65B40E] bg-white"></div>
+                )}
+              </div>
+
+              <div className="flex-1">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h3
+                      className={`text-base font-medium text-[#252525] capitalize`}
+                    >
+                      {step.title}
+                    </h3>
+                    <p className="mt-1 text-xs font-normal text-[#101828]">
+                      {step.time}
+                    </p>
+                  </div>
+                  <span className="text-sm text-gray-400">
+                    {step.timestamp}
+                  </span>
                 </div>
-                <span className="text-sm text-gray-400">{step.timestamp}</span>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
       </div>
     </div>
   );
 };
-
-const statusSteps = [
-  {
-    title: "Picked up",
-    completed: true,
-    timestamp: "February 25, 2025 03:05 pm",
-    location: "Location (optional)",
-  },
-  {
-    title: "In transit",
-    completed: true,
-    timestamp: "February 25, 2025 03:05 pm",
-    location: "Location (optional)",
-  },
-  {
-    title: "Arrived at sorting facility",
-    completed: true,
-    timestamp: "February 25, 2025 03:05 pm",
-    location: "Location (optional)",
-  },
-  {
-    title: "Departed from sorting facility",
-    completed: true,
-    timestamp: "February 25, 2025 03:05 pm",
-    location: "Location (optional)",
-  },
-  {
-    title: "Out for delivery",
-    completed: true,
-    timestamp: "February 25, 2025 03:05 pm",
-    location: "Location (optional)",
-  },
-].reverse();

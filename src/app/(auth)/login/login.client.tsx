@@ -6,8 +6,15 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { FormInputItem } from "@/components/input";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import { login } from "@/server/actions";
 
 export default function LoginClient() {
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -17,7 +24,31 @@ export default function LoginClient() {
   });
 
   const onSubmit = async (data: z.infer<typeof loginSchema>) => {
-    console.log(data);
+    setIsSubmitting(true);
+
+    await login({
+      email: data.email,
+      password: data.password,
+    })
+      .then((res) => {
+        if (res.data) {
+          if (res.data.success) {
+            toast.success("Login successful");
+            form.reset();
+
+            if (res.data.user.role === "admin") {
+              router.push("/manage");
+            } else {
+              router.push("/shipments");
+            }
+          } else {
+            toast.error(res.error || res.data.error || "Login failed");
+          }
+        } else {
+          toast.error(res.error ?? "An error occurred");
+        }
+      })
+      .finally(() => setIsSubmitting(false));
   };
   return (
     <Form {...form}>
@@ -39,8 +70,13 @@ export default function LoginClient() {
           Forgot Password?
         </p>
 
-        <Button className="h-[60px] bg-[#003F38]">
-          <span className="textGradient">Log In</span>
+        <Button
+          disabled={isSubmitting}
+          className={`h-[60px] bg-[#003F38] ${isSubmitting && "animate-pulse"}`}
+        >
+          <span className={`textGradient`}>
+            {isSubmitting ? "..." : "Log In"}
+          </span>
         </Button>
       </form>
     </Form>
