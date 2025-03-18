@@ -16,13 +16,18 @@ import { DeliveryStatus, TrackShipmentResponseData } from "@/types";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { formatDate, formatTime } from "@/utils";
+import { updateShipmentStatus } from "@/server/functions/admin.client";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 export default function UpdateShipmentClient({
   shipmentStatus,
 }: {
   shipmentStatus: TrackShipmentResponseData;
 }) {
+  const router = useRouter();
   const [selectedStep, setSelectedStep] = useState<DeliveryStatus | "">("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const statusSteps = shipmentStatus.updatedStatus.map((status) => ({
     title: status.shipment,
@@ -30,8 +35,30 @@ export default function UpdateShipmentClient({
     timestamp: `${formatDate(status.timestamp)} ${formatTime(status.timestamp)}`,
   }));
 
+  async function onApply() {
+    if (selectedStep !== "") {
+      setIsSubmitting(true);
+      await updateShipmentStatus(shipmentStatus.id, {
+        status: selectedStep,
+      })
+        .then((res) => {
+          if (res.data) {
+            if (res.data.success) {
+              toast.success("Shipment status updated successfully");
+              router.refresh();
+            } else {
+              toast.error(res.error || "Failed to update shipment status");
+            }
+          } else {
+            toast.error(res.error ?? "An error occurred");
+          }
+        })
+        .finally(() => setIsSubmitting(false));
+    }
+  }
+
   return (
-    <div className="mt-6 flex justify-between">
+    <div className="mt-6 flex flex-col justify-between gap-8 lg:flex-row">
       <div className="flex w-full flex-col gap-1.5 lg:max-w-[45%]">
         <Label className="text-base font-light">Next Step</Label>
         <Select
@@ -53,8 +80,12 @@ export default function UpdateShipmentClient({
           </SelectContent>
         </Select>
 
-        <Button className="mt-[18px] h-10 w-fit bg-[#65B40E] !px-8">
-          Apply
+        <Button
+          disabled={isSubmitting}
+          onClick={onApply}
+          className="mt-[18px] h-10 w-fit bg-[#65B40E] !px-8"
+        >
+          {isSubmitting ? "..." : "Apply"}
         </Button>
       </div>
 

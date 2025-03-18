@@ -26,13 +26,13 @@ export function AdminNav({ userName }: Readonly<{ userName: string }>) {
           </span>
         </Link>
 
-        <Link href={`/payments`}>
+        {/* <Link href={`/payments`}>
           <span
             className={`${pathname.startsWith("/payments") ? PrimaryToSecondary2 : "text-[#68706F]"} text-base font-medium`}
           >
             Payments
           </span>
-        </Link>
+        </Link> */}
       </div>
 
       {userName && (

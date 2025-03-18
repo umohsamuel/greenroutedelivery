@@ -6,10 +6,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Check } from "lucide-react";
-import Link from "next/link";
 
 import UpdateShipmentClient from "@/components/pages/(admin)/manage/update/update.client";
 import { trackShipment } from "@/server/functions";
@@ -66,23 +63,6 @@ export default async function UpdateShipment({
 
           <h1 className="mt-4 text-3xl font-bold">Update Shipment</h1>
         </div>
-
-        <div className="hidden items-center justify-end gap-2 lg:flex">
-          <Link
-            href="/manage"
-            className={cn(
-              buttonVariants({ variant: "default" }),
-              "h-11 border border-solid border-[#DADADA] bg-transparent px-6 py-3 text-[#CACACA]"
-            )}
-          >
-            Cancel
-          </Link>
-
-          <Button className="h-11 bg-[#003F38] !px-8 py-3">
-            <Check color="white" size={20} />
-            <span className="textGradient">Save</span>
-          </Button>
-        </div>
       </div>
 
       <div className="rounded-[10px] border border-solid border-[#EEEEEE] p-5">
@@ -100,8 +80,8 @@ export default async function UpdateShipment({
       <div>
         <Label className="text-lg font-bold">Shipment Details</Label>
 
-        <div className="mt-6">
-          <div className="grid w-full grid-cols-2 place-content-between gap-6 lg:max-w-[60%]">
+        <div className="mt-6 flex justify-between">
+          <div className="grid w-full grid-cols-2 place-content-between gap-6">
             {shipmentDetails.length > 0 &&
               shipmentDetails.map((sd, idx) => (
                 <DetailsItem
@@ -112,9 +92,6 @@ export default async function UpdateShipment({
                 />
               ))}
           </div>
-
-          <div className="h-full w-px flex-1 border-r border-dashed border-[#DADADA] bg-red-500" />
-          <div className="w-full lg:max-w-[35%]"></div>
         </div>
       </div>
     </div>

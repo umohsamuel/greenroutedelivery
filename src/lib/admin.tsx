@@ -15,7 +15,10 @@ import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Check, MoreVertical, Pencil, Plus, Trash } from "lucide-react";
 import { AdminEditShipmentCost } from "@/components/modal";
-import { updatePaymentStatus } from "@/server/functions/admin.client";
+import {
+  deleteShipment,
+  updatePaymentStatus,
+} from "@/server/functions/admin.client";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -136,6 +139,22 @@ export function AdminTableActions({ shipment }: { shipment: TShipment }) {
       }
     });
   }
+
+  async function onDelete() {
+    await deleteShipment(shipment.id).then((res) => {
+      if (res.data) {
+        if (res.data.success) {
+          toast.success("Shipment deleted successfully");
+          router.refresh();
+        } else {
+          toast.error(res.error || "Failed to delete shipment");
+        }
+      } else {
+        toast.error(res.error ?? "An error occurred");
+      }
+    });
+  }
+
   return (
     <Dialog>
       <DropdownMenu>
@@ -170,7 +189,7 @@ export function AdminTableActions({ shipment }: { shipment: TShipment }) {
           </DropdownMenuItem>
 
           <DropdownMenuSeparator />
-          <DropdownMenuItem className="text-[#FF3B30]">
+          <DropdownMenuItem onClick={onDelete} className="text-[#FF3B30]">
             <Trash size={16} color="#FF3B30" /> Delete
           </DropdownMenuItem>
         </DropdownMenuContent>
