@@ -352,11 +352,11 @@ export const FinalStep = () => {
           Your package is now registered for delivery. To complete your
           shipment, please send this Tracking ID to our payment processing email{" "}
           <a
-            href="mailto:payments@greenroutedelivery.com"
+            href={`mailto:${process.env.NEXT_PUBLIC_EMAIL}`}
             target="_blank"
             className="text-[#65B40E]"
           >
-            payments@greenroutedelivery.com
+            {process.env.NEXT_PUBLIC_EMAIL}
           </a>
         </p>
       </div>
