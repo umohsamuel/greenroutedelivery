@@ -14,13 +14,13 @@ import { Label } from "@/components/ui/label";
 import { formatAmount, formatDate } from "@/utils";
 
 interface UpdateShipmentProps {
-  searchParams: { tracking_id?: string };
+  searchParams: Promise<{ tracking_id?: string }>;
 }
 
 export default async function UpdateShipment({
   searchParams,
 }: UpdateShipmentProps) {
-  const { tracking_id } = searchParams;
+  const { tracking_id } = await searchParams;
   const shipmentStatus = tracking_id ? await trackShipment(tracking_id) : null;
   console.log({ shipmentStatus });
 
