@@ -66,9 +66,9 @@ export default function LoginClient() {
           ))}
         </div>
 
-        <p className="secondaryGradient mt-2 text-center text-base font-normal">
+        {/* <p className="secondaryGradient mt-2 text-center text-base font-normal">
           Forgot Password?
-        </p>
+        </p> */}
 
         <Button
           disabled={isSubmitting}

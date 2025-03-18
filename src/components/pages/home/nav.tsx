@@ -15,9 +15,9 @@ export default function Nav() {
         <Link href={`/`} className={`${PrimaryToSecondary2}`}>
           Home
         </Link>
-        <Link href={`/`} className={`text-lp-disabled`}>
+        {/* <Link href={`/`} className={`text-lp-disabled`}>
           How it works
-        </Link>
+        </Link> */}
       </div>
       <div>
         <Link href={`/signup`} className={`bg-lp-primary rounded-lg px-4 py-3`}>
