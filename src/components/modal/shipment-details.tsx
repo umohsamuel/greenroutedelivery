@@ -2,7 +2,7 @@
 
 import { useStopScroll } from "@/hooks";
 import { getAShipment } from "@/server/functions/user.client";
-import { Shipment } from "@/types";
+import { TShipment } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { LoaderCircle, X } from "lucide-react";
 import ReactDOM from "react-dom";
@@ -12,7 +12,7 @@ import { formatAmount } from "@/utils";
 interface ShipmentDetailsProps {
   isOpen: boolean;
   onClose: () => void;
-  shipment: Shipment | null;
+  shipment: TShipment | null;
 }
 
 export function ShipmentDetails({

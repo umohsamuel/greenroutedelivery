@@ -24,117 +24,21 @@ import { Input } from "@/components/ui/input";
 import { ArrowDownUp, Filter, Search } from "lucide-react";
 import { DataTablePagination } from "./table-pagination";
 import { useState } from "react";
-import { ShipmentDetails } from "../modal/shipment-details";
-import { Shipment } from "@/types";
-import { formatAmount } from "@/utils";
-
-export const columns: ColumnDef<Shipment>[] = [
-  {
-    accessorKey: "tracking_id",
-    header: "Tracking ID",
-  },
-  {
-    accessorKey: "amount",
-    header: "Amount",
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount")) || 0;
-
-      return <div className="font-medium">{formatAmount(amount)}</div>;
-    },
-  },
-  {
-    accessorKey: "status",
-    header: "Payment Status",
-    cell: ({ row }) => {
-      const status = row.original.status;
-
-      return (
-        <div
-          className={`flex items-center gap-1.5 rounded-md px-2 py-1 capitalize ${
-            status === "pending"
-              ? "text-[#FF9500]"
-              : status === "successful"
-                ? "text-[#037847]"
-                : "text-[#FF3B30]"
-          }`}
-        >
-          <div
-            className={`aspect-square h-2 w-2 rounded-full ${
-              status === "pending"
-                ? "bg-[#FF9500]"
-                : status === "successful"
-                  ? "bg-[#037847]"
-                  : "bg-[#FF3B30]"
-            }`}
-          />
-          {status}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "dateCreated",
-    header: "Date Created",
-  },
-  {
-    accessorKey: "pickupLocation",
-    header: "Pickup Location",
-  },
-  {
-    accessorKey: "destination",
-    header: "Destination",
-  },
-  {
-    accessorKey: "deliveryStatus",
-    header: "Delivery Status",
-    cell: ({ row }) => {
-      const deliveryStatus = row.original.deliveryStatus;
-
-      return (
-        <div
-          className={`flex items-center gap-1.5 rounded-md px-2 py-1 capitalize ${
-            deliveryStatus === "cancelled"
-              ? "text-[#FF3B30]"
-              : deliveryStatus === "in-transit"
-                ? "text-[#003F38]"
-                : "text-[#34C759]"
-          }`}
-        >
-          <div
-            className={`aspect-square h-2 w-2 rounded-full ${
-              deliveryStatus === "cancelled"
-                ? "bg-[#FF3B30]"
-                : deliveryStatus === "in-transit"
-                  ? "bg-[#003F38]"
-                  : "bg-[#34C759]"
-            }`}
-          />
-          {deliveryStatus}
-        </div>
-      );
-    },
-  },
-];
+import { TShipment } from "@/types";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  onRowClick?: (row: TData) => void;
 }
 
-export function DataTable<TData extends Shipment, TValue>({
+export function DataTable<TData extends TShipment, TValue>({
   columns,
   data,
+  onRowClick,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [openShipmentDetails, setOpenShipmentDetails] = useState(false);
-  const [selectedShipment, setSelectedShipment] = useState<Shipment | null>(
-    null
-  );
-
-  function handleCloseShipmentDetails() {
-    setOpenShipmentDetails(false);
-  }
 
   const table = useReactTable({
     data: data.reverse(),
@@ -157,11 +61,6 @@ export function DataTable<TData extends Shipment, TValue>({
         ? [{ id: "pickupLocation", desc: true }]
         : [{ id: "pickupLocation", desc: false }]
     );
-  }
-
-  function handleRowClick(row: Shipment) {
-    setOpenShipmentDetails(true);
-    setSelectedShipment(row);
   }
 
   return (
@@ -230,7 +129,7 @@ export function DataTable<TData extends Shipment, TValue>({
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                   className="cursor-pointer"
-                  onClick={() => handleRowClick(row.original)}
+                  onClick={() => onRowClick?.(row.original)}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} className="px-6 py-4">
@@ -256,11 +155,6 @@ export function DataTable<TData extends Shipment, TValue>({
         </Table>
       </div>
       <DataTablePagination table={table} />
-      <ShipmentDetails
-        isOpen={openShipmentDetails}
-        onClose={handleCloseShipmentDetails}
-        shipment={selectedShipment}
-      />
     </div>
   );
 }

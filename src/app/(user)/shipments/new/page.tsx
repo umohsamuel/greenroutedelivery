@@ -24,6 +24,9 @@ export default function NewShipment() {
   const currentStep = useShipmentStore((state) => state.currentFormStep);
   const setCurrentStep = useShipmentStore((state) => state.setCurrentFormStep);
   const newShipmentData = useShipmentStore((state) => state.newShipment);
+  const setAddShipmentResp = useShipmentStore(
+    (state) => state.setAddShipmentResponse
+  );
 
   async function handleFinalSubmit() {
     setIsSubmitting(true);
@@ -35,6 +38,7 @@ export default function NewShipment() {
           if (res.data.success) {
             toast.success("Shipment created successfully");
             console.log("shipment created", res.data);
+            setAddShipmentResp(res.data);
 
             setCurrentStep(currentStep + 1);
           } else {

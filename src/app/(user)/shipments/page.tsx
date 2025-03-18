@@ -1,4 +1,4 @@
-import { columns, DataTable } from "@/components/table/shipments";
+import UserShipmentTable from "@/components/table/user-shipment-table";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { getShipments } from "@/server/functions";
@@ -44,7 +44,7 @@ export default async function Shipments() {
       </div>
 
       <div className="mt-10">
-        <DataTable columns={columns} data={parsedShipmentsData} />
+        <UserShipmentTable data={parsedShipmentsData} />
       </div>
     </div>
   );

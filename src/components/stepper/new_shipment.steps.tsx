@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { ArrowLeft, Check } from "lucide-react";
+import { ArrowLeft, Check, Copy } from "lucide-react";
 import { FormInputItem } from "../input";
 import {
   deliveryPrefArr,
@@ -24,6 +24,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { ShipmentType } from "@/types";
 import { useEffect } from "react";
+import { toast } from "react-toastify";
 
 export const SenderInfoForm = () => {
   const currentStep = useShipmentStore((state) => state.currentFormStep);
@@ -316,6 +317,8 @@ export const DeliveryPreferencesForm = () => {
 };
 
 export const FinalStep = () => {
+  const addShipmentResp = useShipmentStore((state) => state.addShipmentResp);
+
   return (
     <div className="flex w-full max-w-[480px] flex-col items-center gap-12 text-center">
       <div className="flex aspect-square h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-[#003F38] to-[#65B40E]">
@@ -323,8 +326,26 @@ export const FinalStep = () => {
       </div>
 
       <div className="flex flex-col gap-4">
-        <p className="text-2xl font-normal">
-          Tracking ID: <span className="font-bold">#123456789</span>
+        <p className="flex items-center justify-center gap-2.5 text-2xl font-normal">
+          Tracking ID:{" "}
+          <span className="font-bold">
+            #{addShipmentResp?.data.trackingId ?? "----"}
+          </span>{" "}
+          <Copy
+            size={24}
+            color="#65B40E"
+            className="cursor-pointer"
+            onClick={async () =>
+              await navigator.clipboard
+                .writeText(
+                  addShipmentResp?.data.trackingId ??
+                    "Failed to get tracking ID"
+                )
+                .finally(() => {
+                  toast.success("Tracking ID copied to clipboard");
+                })
+            }
+          />
         </p>
 
         <p>
