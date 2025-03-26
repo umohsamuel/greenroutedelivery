@@ -61,15 +61,15 @@ export function ShipmentDetails({
       ? [
           {
             title: "Length",
-            desc: data.data.data.packageDetails.dimensions.length + "inches",
+            desc: data.data.data.packageDetails.dimensions.length + "cm",
           },
           {
             title: "Width",
-            desc: data.data.data.packageDetails.dimensions.width + "inches",
+            desc: data.data.data.packageDetails.dimensions.width + "cm",
           },
           {
             title: "Height",
-            desc: data.data.data.packageDetails.dimensions.height + "inches",
+            desc: data.data.data.packageDetails.dimensions.height + "cm",
           },
         ]
       : [];

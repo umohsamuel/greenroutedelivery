@@ -12,7 +12,7 @@ export type ShipmentState = {
 export type ShipmentActions = {
   setCurrentFormStep: (step: number) => void;
   setNewShipment: (shipment: Partial<AddShipmentInputs>) => void;
-  setAddShipmentResponse: (resp: AddShipmentResponse) => void;
+  setAddShipmentResponse: (resp: AddShipmentResponse | null) => void;
 };
 
 export type ShipmentStore = ShipmentState & ShipmentActions;
@@ -39,7 +39,7 @@ export const createShipmentStore = (
     setCurrentFormStep: (step: number) => set({ currentFormStep: step }),
     setNewShipment: (shipment: Partial<AddShipmentInputs>) =>
       set({ newShipment: { ...get().newShipment, ...shipment } }),
-    setAddShipmentResponse: (resp: AddShipmentResponse) =>
+    setAddShipmentResponse: (resp: AddShipmentResponse | null) =>
       set({ addShipmentResp: resp }),
   }));
 };

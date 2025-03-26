@@ -131,21 +131,21 @@ export const packageInfoArr = [
     name: "weight" as const,
   },
   {
-    label: "Length in (inches)",
+    label: "Length in (cm)",
     type: "number",
-    placeholder: "Length in (inches)",
+    placeholder: "Length in (cm)",
     name: "length" as const,
   },
   {
-    label: "Width in (inches)",
+    label: "Width in (cm)",
     type: "number",
-    placeholder: "Width in (inches)",
+    placeholder: "Width in (cm)",
     name: "width" as const,
   },
   {
-    label: "Height in (inches)",
+    label: "Height in (cm)",
     type: "number",
-    placeholder: "Height in (inches)",
+    placeholder: "Height in (cm)",
     name: "height" as const,
   },
   {

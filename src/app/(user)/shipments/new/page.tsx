@@ -17,7 +17,8 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { toast } from "react-toastify";
 import { createShipment } from "@/server/actions/user";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { defaultNewShipmentData } from "@/lib/users";
 
 export default function NewShipment() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -25,6 +26,10 @@ export default function NewShipment() {
   const setCurrentStep = useShipmentStore((state) => state.setCurrentFormStep);
   const newShipmentData = useShipmentStore((state) => state.newShipment);
   const setAddShipmentResp = useShipmentStore(
+    (state) => state.setAddShipmentResponse
+  );
+  const setNewShipment = useShipmentStore((state) => state.setNewShipment);
+  const setAddShipmentResponse = useShipmentStore(
     (state) => state.setAddShipmentResponse
   );
 
@@ -54,6 +59,12 @@ export default function NewShipment() {
 
     console.log("big boy clicked");
   }
+
+  useEffect(() => {
+    setCurrentStep(0);
+    setNewShipment(defaultNewShipmentData);
+    setAddShipmentResponse(null);
+  }, [setAddShipmentResponse,setCurrentStep,setNewShipment]);
 
   return (
     <div className="px-[5%] lg:h-screen lg:overflow-hidden lg:px-0">
