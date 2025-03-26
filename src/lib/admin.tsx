@@ -22,6 +22,7 @@ import {
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Users } from "@/types/users";
 
 export const adminColumns: ColumnDef<TShipment>[] = [
   {
@@ -202,3 +203,26 @@ export function AdminTableActions({ shipment }: { shipment: TShipment }) {
     </Dialog>
   );
 }
+
+export const adminUsersColumn: ColumnDef<Users>[] = [
+  {
+    accessorKey: "id",
+    header: "USER ID",
+  },
+  {
+    accessorKey: "name",
+    header: "Name",
+  },
+  {
+    accessorKey: "email",
+    header: "Email",
+  },
+  {
+    accessorKey: "role",
+    header: "Role",
+  },
+  {
+    accessorKey: "dateCreated",
+    header: "Date Created",
+  },
+];

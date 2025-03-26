@@ -1,4 +1,6 @@
 import {
+  AllShipmentsResponse,
+  AllUsersResponse,
   AShipmentResponse,
   DeliveryStatus,
   ErrorResponse,
@@ -122,6 +124,75 @@ export async function deleteShipment(id: string) {
       {
         headers: {
           Authorization: token ? `Bearer ${token}` : "",
+        },
+      }
+    );
+
+    return { error: null, data: res.data };
+  } catch (e) {
+    console.error(e);
+
+    if (axios.isAxiosError(e)) {
+      return {
+        error: e.response?.data?.error || "An error occurred.",
+        data: null,
+      };
+    }
+
+    return { error: "An error occurred.", data: null };
+  }
+}
+
+export async function getAllShipments(page?: number, limit?: number) {
+  const token = Cookies.get("token");
+
+  try {
+    const res = await axiosInstance.get<AllShipmentsResponse | ErrorResponse>(
+      `/admin/shipments`,
+      {
+        headers: {
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+        params: {
+          page,
+          limit,
+        },
+      }
+    );
+
+    return { error: null, data: res.data };
+  } catch (e) {
+    console.error(e);
+
+    if (axios.isAxiosError(e)) {
+      return {
+        error: e.response?.data?.error || "An error occurred.",
+        data: null,
+      };
+    }
+
+    return { error: "An error occurred.", data: null };
+  }
+}
+
+export async function getAllUsers(
+  page?: number,
+  limit?: number,
+  name?: string
+) {
+  const token = Cookies.get("token");
+
+  try {
+    const res = await axiosInstance.get<AllUsersResponse | ErrorResponse>(
+      `/admin/users`,
+      {
+        headers: {
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+        params: {
+          page,
+          limit,
+          name,
         },
       }
     );

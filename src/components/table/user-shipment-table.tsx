@@ -24,6 +24,7 @@ export default function UserShipmentTable({ data }: { data: TShipment[] }) {
   return (
     <>
       <DataTable
+        paginationType="client"
         columns={userColumns}
         data={data}
         onRowClick={handleRowClick}

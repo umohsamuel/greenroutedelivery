@@ -37,3 +37,19 @@ export interface TrackShipmentResponseData {
   updatedStatus: ShipmentStatus[];
   amount: number;
 }
+
+interface User {
+  _id: string;
+  name: string;
+  email: string;
+  role: "admin" | "client";
+  createdAt: string;
+  __v: number;
+}
+
+export interface AllUsersResponse {
+  success: boolean;
+  count: number;
+  pagination: Pagination;
+  data: User[];
+}

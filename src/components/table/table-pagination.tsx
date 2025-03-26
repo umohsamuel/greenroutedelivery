@@ -17,17 +17,15 @@ import {
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
+  paginationType: "client" | "server";
 }
 
 export function DataTablePagination<TData>({
   table,
+  paginationType,
 }: DataTablePaginationProps<TData>) {
   return (
     <div className="flex items-center justify-end px-2">
-      {/* <div className="text-muted-foreground flex-1 text-sm">
-        {table.getFilteredSelectedRowModel().rows.length} of{" "}
-        {table.getFilteredRowModel().rows.length} row(s) selected.
-      </div> */}
       <div className="flex space-x-6 lg:items-center lg:space-x-8">
         <div className="flex items-center space-x-2">
           <p className="hidden text-sm font-medium lg:block">Rows per page</p>
@@ -42,7 +40,7 @@ export function DataTablePagination<TData>({
               <SelectValue placeholder={table.getState().pagination.pageSize} />
             </SelectTrigger>
             <SelectContent side="top">
-              {[10, 20, 30, 40, 50].map((pageSize) => (
+              {[5, 10, 20, 30, 40, 50].map((pageSize) => (
                 <SelectItem key={pageSize} value={`${pageSize}`}>
                   {pageSize}
                 </SelectItem>
@@ -50,10 +48,10 @@ export function DataTablePagination<TData>({
             </SelectContent>
           </Select>
         </div>
-        <div className="flex items-center text-sm font-medium lg:w-[100px] lg:justify-center">
+        {/* <div className="flex items-center text-sm font-medium lg:w-[100px] lg:justify-center">
           Page {table.getState().pagination.pageIndex + 1} of{" "}
-          {table.getPageCount()}
-        </div>
+          {paginationType === "server" ? 500 : table.getPageCount()}
+        </div> */}
         <div className="flex items-center space-x-2">
           <Button
             variant="outline"
@@ -76,8 +74,17 @@ export function DataTablePagination<TData>({
           <Button
             variant="outline"
             className="h-8 w-8 p-0"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
+            onClick={
+              paginationType === "server"
+                ? () =>
+                    table.setPageIndex(
+                      table.getState().pagination.pageIndex + 1
+                    )
+                : () => table.nextPage()
+            }
+            disabled={
+              paginationType === "server" ? undefined : !table.getCanNextPage()
+            }
           >
             <span className="sr-only">Go to next page</span>
             <ChevronRight />
@@ -85,8 +92,17 @@ export function DataTablePagination<TData>({
           <Button
             variant="outline"
             className="hidden h-8 w-8 p-0 lg:flex"
-            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-            disabled={!table.getCanNextPage()}
+            onClick={
+              paginationType === "server"
+                ? () =>
+                    table.setPageIndex(
+                      table.getState().pagination.pageIndex + 1
+                    )
+                : () => table.setPageIndex(table.getPageCount() - 1)
+            }
+            disabled={
+              paginationType === "server" ? undefined : !table.getCanNextPage()
+            }
           >
             <span className="sr-only">Go to last page</span>
             <ChevronsRight />

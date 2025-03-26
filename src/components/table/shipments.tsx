@@ -24,24 +24,66 @@ import { Input } from "@/components/ui/input";
 import { ArrowDownUp, Filter, Search } from "lucide-react";
 import { DataTablePagination } from "./table-pagination";
 import { useState } from "react";
-import { TShipment } from "@/types";
 
-interface DataTableProps<TData, TValue> {
+// interface DataTableProps<TData, TValue> {
+//   columns: ColumnDef<TData, TValue>[];
+//   data: TData[];
+//   onRowClick?: (row: TData) => void;
+//   reversed?: boolean;
+//   title?: string;
+//   filterKey?: keyof TData;
+//   onFilterChange?: (value: string) => void;
+// }
+
+interface BaseDataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   onRowClick?: (row: TData) => void;
+  reversed?: boolean;
+  title?: string;
+  filterKey?: keyof TData;
+  onFilterChange?: (value: string) => void;
+  paginationType: "client" | "server";
 }
 
-export function DataTable<TData extends TShipment, TValue>({
+interface ServerPaginationProps {
+  paginationType: "server";
+  page: number;
+  pageSize: number;
+  setPage: React.Dispatch<React.SetStateAction<number>>;
+  setPageSize: React.Dispatch<React.SetStateAction<number>>;
+}
+
+interface ClientPaginationProps {
+  paginationType: "client";
+  page?: undefined;
+  pageSize?: undefined;
+  setPage?: undefined;
+  setPageSize?: undefined;
+}
+
+type DataTableProps<TData, TValue> = BaseDataTableProps<TData, TValue> &
+  (ServerPaginationProps | ClientPaginationProps);
+
+export function DataTable<TData, TValue>({
   columns,
   data,
   onRowClick,
+  filterKey,
+  reversed = true,
+  title,
+  onFilterChange,
+  paginationType = "client",
+  page,
+  pageSize,
+  setPage,
+  setPageSize,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   const table = useReactTable({
-    data: data.reverse(),
+    data: reversed ? data.reverse() : data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -52,7 +94,36 @@ export function DataTable<TData extends TShipment, TValue>({
     state: {
       sorting,
       columnFilters,
+      ...(paginationType === "server" &&
+      page !== undefined &&
+      pageSize !== undefined
+        ? {
+            pagination: {
+              pageIndex: page! - 1,
+              pageSize,
+            },
+          }
+        : {}),
     },
+    ...(paginationType === "server" &&
+    page !== undefined &&
+    pageSize !== undefined &&
+    setPage !== undefined &&
+    setPageSize !== undefined
+      ? {
+          onPaginationChange: (updater) => {
+            setPageSize((prevPageSize) => {
+              const { pageIndex, pageSize: newPageSize } =
+                typeof updater === "function"
+                  ? updater({ pageIndex: page - 1, pageSize: prevPageSize })
+                  : updater;
+
+              setPage(pageIndex + 1);
+              return newPageSize;
+            });
+          },
+        }
+      : {}),
   });
 
   function handleAscSort() {
@@ -67,7 +138,7 @@ export function DataTable<TData extends TShipment, TValue>({
     <div className="flex flex-col gap-6 rounded-[8px] border border-solid border-[#EEEEEE] p-3 lg:p-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between lg:gap-0">
         <h3 className="text-lg font-bold text-[#101828]">
-          All shipments{" "}
+          {title ? title : "All shipments"}{" "}
           <span className="font-medium text-[#65B40E]">({data.length})</span>
         </h3>
 
@@ -79,17 +150,19 @@ export function DataTable<TData extends TShipment, TValue>({
               color="#00000099"
             />
             <Input
-              placeholder="Search Tracking ID"
+              placeholder={`Search ${filterKey ? (filterKey as string) : "Tracking ID"}`}
               className="h-[38px] pl-10"
               value={
-                (table.getColumn("tracking_id")?.getFilterValue() as string) ??
-                ""
+                (table
+                  .getColumn(filterKey ? (filterKey as string) : "tracking_id")
+                  ?.getFilterValue() as string) ?? ""
               }
-              onChange={(event) =>
+              onChange={(event) => {
                 table
-                  .getColumn("tracking_id")
-                  ?.setFilterValue(event.target.value)
-              }
+                  .getColumn(filterKey ? (filterKey as string) : "tracking_id")
+                  ?.setFilterValue(event.target.value);
+                onFilterChange?.(event.target.value);
+              }}
             />
           </div>
 
@@ -154,7 +227,7 @@ export function DataTable<TData extends TShipment, TValue>({
           </TableBody>
         </Table>
       </div>
-      <DataTablePagination table={table} />
+      <DataTablePagination table={table} paginationType={paginationType} />
     </div>
   );
 }
